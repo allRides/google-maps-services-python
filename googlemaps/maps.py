@@ -125,7 +125,7 @@ class StaticMapPath(StaticMapParam):
 def static_map(client, size,
                center=None, zoom=None, scale=None, 
                format=None, maptype=None, language=None, region=None,
-               markers=None, path=None, visible=None, style=None):
+               markers=None, paths=[], visible=None, style=None):
     """
     Downloads a map image from the Maps Static API.
 
@@ -229,14 +229,15 @@ def static_map(client, size,
     if markers:
         params["markers"] = markers
 
-    if path:
-        params["path"] = path
-
     if visible:
         params["visible"] = convert.location_list(visible)
 
     if style:
         params["style"] = convert.components(style)
+
+    params = sorted(params.items())
+    if paths:
+        params.extend([["path",path] for path in paths])
 
     response = client._request(
         "/maps/api/staticmap",
